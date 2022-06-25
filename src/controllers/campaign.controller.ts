@@ -26,8 +26,10 @@ class CampaignController{
 
   public getCampaignDetails=async (req:Request, res:Response, next:NextFunction)=>{
     try {
-      let s=await this.campaignService.getDetails(req.params.id,'adsets');
-      res.send(s)
+      let resposne=await this.campaignService.getDetails(req.params.id,'adsets');
+      res.status(200).json({
+        data:resposne
+      });
     } catch (error) {
       console.log(error.message);
       
@@ -35,8 +37,10 @@ class CampaignController{
   }
 
   public createAdSets= async (req:Request, res:Response, next:NextFunction)=>{
-    let s =await this.campaignService.createAdSets(req.params.id);
-    res.send(s)
+    let data =await this.campaignService.createAdSets(req.params.id);
+    res.status(200).json({
+      data:data
+    });
   }
 }
 

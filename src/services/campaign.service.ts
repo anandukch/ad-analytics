@@ -15,7 +15,11 @@ class CampaignService {
     } catch (error) {
       console.log(error);
 
-      return error.message;
+      return {
+        success: false,
+        message: "internal server error",
+        data: error.response.data,
+      }
     }
   }
   public async create() {
@@ -25,11 +29,9 @@ class CampaignService {
         name: `CampaignKch-${Math.random().toString(36).substring(2, 6)}`,
         objective: 'LINK_CLICKS',
         // lifetime_budget: lifeTimeBudget * 100,
-        lifetime_budget: 12 * 1000 ,
+        lifetime_budget: 12 * 1000,
         // bid_strategy:  'LOWEST_COST_WITHOUT_CAP',
-        bid_strategy:'LOWEST_COST_WITH_BID_CAP',
-
-       
+        bid_strategy: 'LOWEST_COST_WITH_BID_CAP',
         status: 'ACTIVE',
         special_ad_categories: [],
       });
@@ -40,6 +42,11 @@ class CampaignService {
       };
     } catch (error) {
       console.log(error.response.data.error);
+      return {
+        success: false,
+        message: "internal server error",
+        data: error.response.data,
+      }
     }
   }
 
@@ -53,9 +60,18 @@ class CampaignService {
         },
       });
 
-      return objectRequest.data;
+      return {
+        success: true,
+        message: 'campaign created successfully',
+        data: objectRequest.data,
+      }
     } catch (error) {
       console.log(error.message);
+      return {
+        success: false,
+        message: "internal server error",
+        data: error.response.data,
+      }
     }
   };
   public createAdSets = async (campId: any) => {
@@ -69,7 +85,6 @@ class CampaignService {
         // // optimization_goal: '',
         // campaign_id: campId,
         // promoted_object: { application_id: '<appID>', object_store_url: '<appLink>' },
-
         // daily_budget: '1000',
         start_time: '2022-05-30T13:25:52-0700',
         end_time: '2022-08-06T13:25:52-0700',
@@ -82,6 +97,40 @@ class CampaignService {
           // facebook_positions: ['feed'],
           geo_locations: { countries: ['US'] },
           // publisher_platforms: ['facebook', 'audience_network'],
+        },
+        status: 'PAUSED',
+      });
+      console.log(response.data);
+
+      return {
+        success: true,
+        message: 'adsets created successfully',
+        data: response.data,
+      }
+    } catch (error) {
+      console.log(error.response.data.error);
+      return {
+        success: false,
+        message: "internal server error",
+        data: error.response.data,
+      }
+     
+    }
+  };
+
+  public createAd = async (adSetId: any) => {
+    try {
+      const response: any = await axios.post(`https://graph.facebook.com/v12.0/act_${ACC_ID}/ads`, {
+        access_token: ACCESS_TOKEN,
+        name: 'Sample test',
+        start_time: '2022-05-30T13:25:52-0700',
+        end_time: '2022-08-06T13:25:52-0700',
+        adset_id: adSetId,
+        bid_amount: '100',
+        billing_event: 'IMPRESSIONS',
+        optimization_goal: 'POST_ENGAGEMENT',
+        targeting: {
+          geo_locations: { countries: ['US'] },
         },
         status: 'PAUSED',
       });
