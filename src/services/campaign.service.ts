@@ -1,6 +1,5 @@
 import { ACCESS_TOKEN, ACC_ID } from '@/config';
 import axios from 'axios';
-import { NextFunction, Request, Response } from 'express';
 
 class CampaignService {
   public async index() {
@@ -19,68 +18,79 @@ class CampaignService {
       return error.message;
     }
   }
-  public async create(){
+  public async create() {
     try {
-      const response: any = await axios.post(
-        `https://graph.facebook.com/v14.0/act_${ACC_ID}/campaigns`,
-        {
-          access_token: ACCESS_TOKEN,
-          name:`CampaignKch-${Math.random().toString(36).substring(2, 6)}`,
-          objective:"LINK_CLICKS",
-          // lifetime_budget: lifeTimeBudget * 100,
-          // lifetime_budget: 12 * 100 ,
-          // bid_strategy:  'LOWEST_COST_WITHOUT_CAP',
-          status:'ACTIVE',
-          special_ad_categories: [],
-        }
-      );
+      const response: any = await axios.post(`https://graph.facebook.com/v12.0/act_${ACC_ID}/campaigns`, {
+        access_token: ACCESS_TOKEN,
+        name: `CampaignKch-${Math.random().toString(36).substring(2, 6)}`,
+        objective: 'LINK_CLICKS',
+        // lifetime_budget: lifeTimeBudget * 100,
+        lifetime_budget: 12 * 1000 ,
+        // bid_strategy:  'LOWEST_COST_WITHOUT_CAP',
+        bid_strategy:'LOWEST_COST_WITH_BID_CAP',
+
+       
+        status: 'ACTIVE',
+        special_ad_categories: [],
+      });
       return {
-        success:true,
-        message:"campaign created successfully",
-        data:response
-      }
+        success: true,
+        message: 'campaign created successfully',
+        data: response.data,
+      };
     } catch (error) {
-      console.log(error.message);
+      console.log(error.response.data.error);
     }
-    
   }
 
-  public getDetails= async (platformCampaignId:any,objectType:'ads' | 'adsets')=>{
+  public getDetails = async (platformCampaignId: any, objectType: 'ads' | 'adsets') => {
     try {
       let slug = `/${platformCampaignId}/${objectType}?fields=id,name`;
 
-        const objectRequest = await axios.get( `https://graph.facebook.com/v12.0/${slug}`, {
-            headers: {
-                Authorization: `Bearer ${ACCESS_TOKEN}`,
-            }
-        });
-        
-        return objectRequest.data
+      const objectRequest = await axios.get(`https://graph.facebook.com/v12.0/${slug}`, {
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+        },
+      });
+
+      return objectRequest.data;
     } catch (error) {
       console.log(error.message);
-      
     }
-  }
-  public createAdSets= async (campId:any)=>{
+  };
+  public createAdSets = async (campId: any) => {
     try {
-      const response: any = await axios.post(
-        `https://graph.facebook.com/v14.0/act_${ACC_ID}/adsets`,
-        {
-          access_token: ACCESS_TOKEN,
-          name:"My Ad Set",
-          optimization_goal:"REACH",
-          billing_event:"IMPRESSIONS",
-          bid_amount:2,
-          daily_budget:1000,
-          campaign_id:campId,
-          targeting:{"geo_locations":{"countries":["IN"]}},
-          status:"PAUSED",
-        }
-      );
-      return response.data
+      const response: any = await axios.post(`https://graph.facebook.com/v12.0/act_${ACC_ID}/adsets`, {
+        access_token: ACCESS_TOKEN,
+        name: 'Sample test',
+        // daily_budget: '1000',
+        // // bid_amount: '2',
+        // billing_event: 'LINK_CLICKS',
+        // // optimization_goal: '',
+        // campaign_id: campId,
+        // promoted_object: { application_id: '<appID>', object_store_url: '<appLink>' },
+
+        // daily_budget: '1000',
+        start_time: '2022-05-30T13:25:52-0700',
+        end_time: '2022-08-06T13:25:52-0700',
+        campaign_id: campId,
+        bid_amount: '100',
+        billing_event: 'IMPRESSIONS',
+        optimization_goal: 'POST_ENGAGEMENT',
+        targeting: {
+          // device_platforms: ['mobile'],
+          // facebook_positions: ['feed'],
+          geo_locations: { countries: ['US'] },
+          // publisher_platforms: ['facebook', 'audience_network'],
+        },
+        status: 'PAUSED',
+      });
+      console.log(response.data);
+
+      return response.data;
     } catch (error) {
-      
+      console.log(error.response.data.error);
     }
-  }
+  };
 }
 export default CampaignService;

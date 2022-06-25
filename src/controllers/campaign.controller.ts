@@ -17,7 +17,7 @@ class CampaignController{
   public createCampaign= async (req:Request, res:Response, next:NextFunction)=>{
     try {
       let data=await this.campaignService.create();
-      res.send(data);
+      res.send(data.data);
       
     } catch (error) {
       res.send(error)
