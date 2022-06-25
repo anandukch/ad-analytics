@@ -28,7 +28,7 @@ class CampaignService {
         lifetime_budget: 12 * 1000,
         // bid_strategy:  'LOWEST_COST_WITHOUT_CAP',
         bid_strategy: 'LOWEST_COST_WITH_BID_CAP',
-        status: 'ACTIVE',
+        status: 'PAUSED',
         special_ad_categories: [],
       });
       return response.data;
