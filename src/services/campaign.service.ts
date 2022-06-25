@@ -1,4 +1,5 @@
 import { ACCESS_TOKEN, ACC_ID } from '@/config';
+import { HttpException } from '@/exceptions/HttpException';
 import axios from 'axios';
 
 class CampaignService {
@@ -14,12 +15,7 @@ class CampaignService {
       return data;
     } catch (error) {
       console.log(error);
-
-      return {
-        success: false,
-        message: "internal server error",
-        data: error.response.data,
-      }
+      throw new HttpException(500, error);
     }
   }
   public async create() {
@@ -35,18 +31,10 @@ class CampaignService {
         status: 'ACTIVE',
         special_ad_categories: [],
       });
-      return {
-        success: true,
-        message: 'campaign created successfully',
-        data: response.data,
-      };
+      return response.data;
     } catch (error) {
       console.log(error.response.data.error);
-      return {
-        success: false,
-        message: "internal server error",
-        data: error.response.data,
-      }
+      throw new HttpException(500, error);
     }
   }
 
@@ -60,18 +48,10 @@ class CampaignService {
         },
       });
 
-      return {
-        success: true,
-        message: 'campaign created successfully',
-        data: objectRequest.data,
-      }
+      return objectRequest.data;
     } catch (error) {
       console.log(error.message);
-      return {
-        success: false,
-        message: "internal server error",
-        data: error.response.data,
-      }
+      throw new HttpException(500, error);
     }
   };
   public createAdSets = async (campId: any) => {
@@ -88,7 +68,7 @@ class CampaignService {
         // daily_budget: '1000',
         start_time: '2022-05-30T13:25:52-0700',
         end_time: '2022-08-06T13:25:52-0700',
-        campaign_id: campId,
+        // campaign_id: campId,
         bid_amount: '100',
         billing_event: 'IMPRESSIONS',
         optimization_goal: 'POST_ENGAGEMENT',
@@ -100,21 +80,9 @@ class CampaignService {
         },
         status: 'PAUSED',
       });
-      console.log(response.data);
-
-      return {
-        success: true,
-        message: 'adsets created successfully',
-        data: response.data,
-      }
+      return response.data;
     } catch (error) {
-      console.log(error.response.data.error);
-      return {
-        success: false,
-        message: "internal server error",
-        data: error.response.data,
-      }
-     
+      throw new HttpException(500,error.response.data.error);
     }
   };
 
