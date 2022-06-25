@@ -16,9 +16,6 @@ class CampaignRoute implements Routes {
     this.router.post(`${this.path}`, this.campaignController.createCampaign)
     this.router.get(`${this.path}/:id`, this.campaignController.getCampaignDetails)
     this.router.post(`${this.path}/:id/adsets`, this.campaignController.createAdSets)
-
-    // this.router.post(`${this.path}login`, this.authController.logIn);
-    // this.router.post(`${this.path}logout`, authMiddleware, this.authController.logOut);
   }
 }
 
