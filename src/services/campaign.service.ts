@@ -88,23 +88,23 @@ class CampaignService {
 
   public createAd = async (adSetId: any) => {
     try {
-      const response: any = await axios.post(`https://graph.facebook.com/v12.0/act_${ACC_ID}/ads`, {
-        access_token: ACCESS_TOKEN,
-        name: 'Sample test',
-        start_time: '2022-05-30T13:25:52-0700',
-        end_time: '2022-08-06T13:25:52-0700',
-        adset_id: adSetId,
-        bid_amount: '100',
-        billing_event: 'IMPRESSIONS',
-        optimization_goal: 'POST_ENGAGEMENT',
-        targeting: {
-          geo_locations: { countries: ['US'] },
-        },
-        status: 'PAUSED',
-      });
-      console.log(response.data);
+      // const response: any = await axios.post(`https://graph.facebook.com/v12.0/act_${ACC_ID}/ads`, {
+      //   access_token: ACCESS_TOKEN,
+      //   name: 'Sample test',
+      //   start_time: '2022-05-30T13:25:52-0700',
+      //   end_time: '2022-08-06T13:25:52-0700',
+      //   adset_id: adSetId,
+      //   bid_amount: '100',
+      //   billing_event: 'IMPRESSIONS',
+      //   optimization_goal: 'POST_ENGAGEMENT',
+      //   targeting: {
+      //     geo_locations: { countries: ['US'] },
+      //   },
+      //   status: 'PAUSED',
+      // });
+      // console.log(response.data);
 
-      return response.data;
+      // return response.data;
     } catch (error) {
       console.log(error.response.data.error);
     }
