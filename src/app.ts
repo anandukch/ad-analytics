@@ -27,7 +27,6 @@ class App {
     this.initializeSwagger();
     this.initializeErrorHandling();
     // console.log(process.env.ACCESS_TOKEN);
-    
   }
 
   public listen() {

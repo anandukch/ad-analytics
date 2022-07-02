@@ -65,6 +65,23 @@ class CampaignController {
       });
     }
   };
+  
+  public adCreative = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      let data = await this.campaignService.createCreative(req.params.id);
+      res.status(200).json({
+        success: true,
+        message: 'ad creative created successfully',
+        data,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'internal server error',
+        data: error.message,
+      });
+    }
+  }
 }
 
 export default CampaignController;
