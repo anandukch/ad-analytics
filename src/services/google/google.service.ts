@@ -2,7 +2,9 @@ import axios from 'axios';
 import { generateRandom } from './utils';
 
 class GoogleService {
-  public async createCampaign({ customerId, accessToken, developerToken, budgetId, startDate, endDate }) {
+  public async createCampaign({ customerId, accessToken, developerToken, startDate, endDate,resourceName }) {
+    console.log(resourceName);
+    
     const res = await axios.post(
       `https://googleads.googleapis.com/v11/customers/${customerId}/campaigns:mutate`,
       {
@@ -13,7 +15,7 @@ class GoogleService {
               status: 'PAUSED',
               startDate,
               endDate,
-              campaignBudget: `customers/${customerId}/campaignBudgets/${budgetId}`,
+              campaignBudget: resourceName,
               advertisingChannelType: 'SEARCH',
               networkSettings: {
                 targetGoogleSearch: true,
@@ -34,7 +36,7 @@ class GoogleService {
         },
       },
     );
-
+      
     return res.data.results[0];
   }
 
@@ -60,13 +62,11 @@ class GoogleService {
         },
       },
     );
-
-    return {
-      id: res.data.results[0].resourceName.split('/').at(-1),
-      resourceName: res.data.results[0].resourceName,
-    };
+      console.log(res.data.results[0].resourceName);
+      
+    return res.data.results[0]
   }
-  public async createAdGroup({ accessToken, customerId, campaignId, developerToken, name }) {
+  public async createAdGroup({ accessToken, customerId, resourceName, developerToken, name }) {
     const res = await axios.post(
       `https://googleads.googleapis.com/v11/customers/${customerId}/adGroups:mutate`,
       {
@@ -77,7 +77,8 @@ class GoogleService {
               status: 'PAUSED',
               type: 'SEARCH_STANDARD',
               cpcBidMicros: 200_000,
-              campaign: `customers/${customerId}/campaigns/${campaignId}`,
+              // campaign: `customers/${customerId}/campaigns/${campaignId}`,
+              campaign:resourceName
             },
           },
         ],
@@ -90,20 +91,19 @@ class GoogleService {
         },
       },
     );
-    return {
-      id: res.data.results[0].resourceName.split('/').at(-1),
-      resourceName: res.data.results[0].resourceName,
-    };
+    return res.data.results[0];
   }
 
-  public async createSearchAd({ accessToken, developerToken, customerId, adGroupId, headlines, descriptions, websiteURL }) {
+  public async createSearchAd({ accessToken, developerToken, customerId, resourceName, headlines, descriptions, websiteURL }) {
+    
     const res = await axios.post(
       `https://googleads.googleapis.com/v11/customers/${customerId}/adGroupAds:mutate`,
       {
         operations: [
           {
             create: {
-              adGroup: `customers/${customerId}/adGroups/${adGroupId}`,
+              // adGroup: `customers/${customerId}/adGroups/${adGroupId}`,
+              adGroup: resourceName,
               status: 'PAUSED',
               ad: {
                 finalUrls: [websiteURL],
@@ -140,57 +140,21 @@ class GoogleService {
           'developer-token': developerToken,
         },
       },
-    );
-    return {
-      id: res.data.results[0].resourceName.split('/').at(-1),
-      resourceName: res.data.results[0].resourceName,
-    };
+    ); 
+    // console.log(res.data);
+  //    console.log("res");
+     
+    return res.data.results[0]
   }
 
-  public async adKeywordCritertionToAdGroup({ accessToken, developerToken, customerId, adGroupId, keywords, websiteURL }) {
-    try {
-      const operations = keywords.map(keyword => {
-        return {
-          create: {
-            type: 'KEYWORD',
-            adGroup: `customers/${customerId}/adGroups/${adGroupId}`,
-            finalUrls: [websiteURL],
-            keyword: {
-              text: keyword,
-              matchType: 'BROAD',
-            },
-            status: 'ENABLED',
-          },
-        };
-      });
-      const res = await axios.post(
-        `https://googleads.googleapis.com/v11/customers/${customerId}/adGroupCriteria:mutate`,
-        {
-          operations: operations,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-            'developer-token': developerToken,
-          },
-        },
-      );
-      console.log(res.data.results);
-      return true;
-    } catch (error) {
-      console.log(error?.response?.data?.error || error);
-      return false;
-    }
-  }
 
   public async getCampaign({ accessToken, developerToken, customerId }) {
     const res = await axios
       .post(
         `https://googleads.googleapis.com/v11/customers/${customerId}/googleAds:searchStream`,
         {
-          query: `SELECT campaign.name
-                FROM campaign`,
+          query: `SELECT campaign.name,campaign.id,campaign.status,campaign.start_date
+                  FROM campaign`,
         },
         {
           headers: {
@@ -201,21 +165,43 @@ class GoogleService {
         },
       )
       return res.data[0].results;
-      // .then(res => {
-        
-        
-      //   return res.data[0].results;
-      // })
-      // .catch(err => {
-      //   console.log(err.response.data[0].error.details[0].errors);
-      // });
-    // console.log(res.data[0].results.forEach(result => {
-    //   console.log(result.campaign.id,result.campaign.name);
+  }
 
-    // }));
-    // console.log(res.data[0].results);
-
-    // return res.data[0].results;
+  public async getAdGroupAds({ accessToken, developerToken, customerId }) {
+    const res = await axios
+      .post(
+        `https://googleads.googleapis.com/v11/customers/${customerId}/googleAds:searchStream`,
+        {
+          query: `SELECT campaign.name,campaign.id,campaign.status,campaign.start_date,ad_group.id,ad_group.name
+                FROM ad_group_ad`,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+            'developer-token': developerToken,
+          },
+        },
+      )
+      return res.data[0].results;
+  }
+  public async getAdGroup({ accessToken, developerToken, customerId }) {
+    const res = await axios
+      .post(
+        `https://googleads.googleapis.com/v11/customers/${customerId}/googleAds:searchStream`,
+        {
+          query: `SELECT campaign.name,campaign.id,campaign.status,campaign.start_date,ad_group.id,ad_group.name
+                FROM ad_group`,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+            'developer-token': developerToken,
+          },
+        },
+      )
+      return res.data[0].results;
   }
 }
 
