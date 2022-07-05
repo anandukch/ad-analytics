@@ -95,7 +95,7 @@ class CampaignService {
       //   adset_id: adSetId,
       //   creative: {
       //     object_story_spec: {
-      //       page_id: ,
+      //       page_id: '109845811774947',
       //       link_data: {
       //         link: '<appLink>',
       //         message: '<message>',
