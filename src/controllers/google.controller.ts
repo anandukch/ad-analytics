@@ -17,7 +17,6 @@ class GoogleController {
         developerToken: this.developerToken,
         customerId: this.customerId,
       });
-      console.log(s);
 
       res.status(200).json({
         success: true,

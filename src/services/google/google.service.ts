@@ -2,16 +2,15 @@ import axios from 'axios';
 import { generateRandom } from './utils';
 
 class GoogleService {
-  public async createCampaign({ customerId, accessToken, developerToken, startDate, endDate, resourceName }) {
-    console.log(resourceName);
 
+  public async createCampaign({ customerId, accessToken, developerToken, startDate, endDate, resourceName }) {
     const res = await axios.post(
       `https://googleads.googleapis.com/v11/customers/${customerId}/campaigns:mutate`,
       {
         operations: [
           {
             create: {
-              name: `Test${generateRandom()}`,
+              name: `TestCampaign${generateRandom()}`,
               status: 'PAUSED',
               startDate,
               endDate,
@@ -39,6 +38,7 @@ class GoogleService {
 
     return res.data.results[0];
   }
+
 
   public async createBudget({ customerId, accessToken, developerToken, amount }) {
     const res = await axios.post(
@@ -197,6 +197,15 @@ class GoogleService {
       },
     );
     return res.data[0].results;
+  }
+
+
+  public async setCampaignTargetLocation(){
+    try {
+      
+    } catch (error) {
+      
+    }
   }
 }
 
