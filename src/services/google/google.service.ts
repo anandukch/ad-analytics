@@ -1,8 +1,11 @@
+import { GOOGLE_DEVELOPER_TOKEN } from '@/config';
 import axios from 'axios';
 import { generateRandom } from './utils';
 
 class GoogleService {
-
+  private developerToken = GOOGLE_DEVELOPER_TOKEN;
+  private customerId = '5921661095';
+  private refreshToken = '1//0gncKtuGhzPxHCgYIARAAGBASNwF-L9IrtBeBmmW871Y-vuvb1gbYDrQ1NFEc7MQt8Bh35YqifjBc54ISPdcQZxAlN9OHFtIqhKI';
   public async createCampaign({ customerId, accessToken, developerToken, startDate, endDate, resourceName }) {
     const res = await axios.post(
       `https://googleads.googleapis.com/v11/customers/${customerId}/campaigns:mutate`,
@@ -39,7 +42,6 @@ class GoogleService {
     return res.data.results[0];
   }
 
-
   public async createBudget({ customerId, accessToken, developerToken, amount }) {
     const res = await axios.post(
       `https://googleads.googleapis.com/v11/customers/${customerId}/campaignBudgets:mutate`,
@@ -47,7 +49,7 @@ class GoogleService {
         operations: [
           {
             create: {
-              name: `An example budget ${generateRandom()}`,
+              name: `test budget ${generateRandom()}`,
               deliveryMethod: 'STANDARD',
               amountMicros: 1_000_000 * amount,
             },
@@ -150,7 +152,7 @@ class GoogleService {
     const res = await axios.post(
       `https://googleads.googleapis.com/v11/customers/${customerId}/googleAds:searchStream`,
       {
-        query: `SELECT campaign.name,campaign.id,campaign.status,campaign.start_date
+        query: `SELECT campaign.name,campaign.id,campaign.status,campaign.start_date,campaign.end_date
                   FROM campaign`,
       },
       {
@@ -199,13 +201,9 @@ class GoogleService {
     return res.data[0].results;
   }
 
-
-  public async setCampaignTargetLocation(){
+  public async setCampaignTargetLocation() {
     try {
-      
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   }
 }
 
